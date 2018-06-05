@@ -266,3 +266,18 @@ def cache(ndarray, filename):
     path = os.path.join(CACHE_ROOT, filename)
     ensure_dir_exists(CACHE_ROOT)
     np.save(path, ndarray)
+
+
+def shuffle(x, *extra):
+    length = len(x)
+    idx = np.arange(length)
+    np.random.shuffle(idx)
+    extra = list(extra)
+    for i in range(len(extra)):
+        assert len(extra[i]) == length
+        tensor = extra[i]
+        tensor = tensor[idx]
+        extra[i] = tensor
+    return x[idx], (*extra)
+
+
