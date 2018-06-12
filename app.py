@@ -61,32 +61,40 @@ if __name__ == '__main__':
 
     x_train = np.load('cache/x_train.npy')
     y_train = np.load('cache/y_train.npy')
-    mini_x = x_train[:100000]
-    mini_y = y_train[:100000]
+    mini_x = x_train[:10_000]
+    mini_y = y_train[:10_000]
 
-    model = future_direction_conv(mini_x.shape)
+    model = future_price_conv(mini_x.shape)
     prices_train = mini_y[:, -1, 0]
     price_diff = prices_train - mini_x[:, -1, 0]
-    labels = price_diff > 0
-    train_history = model.fit(mini_x, labels, epochs=1, batch_size=128, shuffle=True)
-    print('\nTraining complete!\n')
+    train_history = model.fit(mini_x, price_diff, epochs=1, batch_size=64, shuffle=True)
 
-    x_valid = np.load('cache/x_valid.npy')
-    y_valid = np.load('cache/y_valid.npy')
 
-    last_prices = x_valid[:, -1, 0]
-    prices_valid = y_valid[:, -1, 0]
-    diff_valid = prices_valid - last_prices
-    dir_valid = diff_valid > 0
-
-    dir_pred = model.predict(x_valid, verbose=True)
-
-    dir_pred = dir_pred.squeeze()
-
-    dir_pred = dir_pred > .5
-
-    correct_dirs = np.sum(dir_valid == dir_pred)
-    acc = correct_dirs / len(dir_valid)
-
-    print("Direction Accuracy: {:.3f}%".format(acc * 100))
+    # model = future_direction_conv(mini_x.shape)
+    # prices_train = mini_y[:, -1, 0]
+    # price_diff = prices_train - mini_x[:, -1, 0]
+    # labels = price_diff > 0
+    # train_history = model.fit(mini_x, labels, epochs=1, batch_size=128, shuffle=True)
+    # print('\nTraining complete!\n')
+    #
+    # del x_train, y_train
+    #
+    # x_valid = np.load('cache/x_valid.npy')
+    # y_valid = np.load('cache/y_valid.npy')
+    #
+    # last_prices = x_valid[:, -1, 0]
+    # prices_valid = y_valid[:, -1, 0]
+    # diff_valid = prices_valid - last_prices
+    # dir_valid = diff_valid > 0
+    #
+    # dir_pred = model.predict(x_valid, verbose=True)
+    #
+    # dir_pred = dir_pred.squeeze()
+    #
+    # dir_pred = dir_pred > .5
+    #
+    # correct_dirs = np.sum(dir_valid == dir_pred)
+    # acc = correct_dirs / len(dir_valid)
+    #
+    # print("Direction Accuracy: {:.3f}%".format(acc * 100))
 
