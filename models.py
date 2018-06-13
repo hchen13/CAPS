@@ -1,5 +1,5 @@
 import numpy as np
-from keras import Model, Input
+from keras import Model, Input, regularizers
 from keras import backend as K
 from keras.layers import Dense, LSTM, Dropout, multiply, Conv1D, MaxPooling1D, Flatten
 
@@ -27,10 +27,13 @@ def elliptic_paraboloid_weight(x, y, diff_weight, same_weight):
 
 def directional_loss(y, y_hat):
     squared_error = K.mean(K.square(y - y_hat))
-    diff_sign = y * y_hat
-    sign_error = 1 - K.sigmoid(diff_sign)
-
+    diff_sign = y * y_hat * 4
+    sign_error = 2 - K.sigmoid(diff_sign)
     return squared_error * sign_error
+
+
+def directional_accuracy(y, y_hat):
+    return K.mean(y * y_hat > 0)
 
 
 def future_price_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
@@ -52,6 +55,7 @@ def future_price_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
     model.compile(optimizer='adam', loss=['mae'], metrics=['mae'])
     model.summary()
     return model
+
 
 def future_direction_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
 
@@ -97,30 +101,35 @@ def future_price_conv(input_shape):
     p = Dense(1, activation='linear', name='price')(feature_vec)
 
     model = Model(inputs=inputs, outputs=p)
-    model.compile(optimizer='adam', loss=directional_loss, metrics=[directional_loss])
+    model.compile(optimizer='adam', loss=directional_loss, metrics=[directional_accuracy])
     model.summary()
     return model
 
 
-def future_direction_conv(input_shape):
+def future_direction_conv(input_shape, keep_prob=.2):
     inputs = Input(shape=input_shape[1:])
 
     f = Conv1D(16, 6, padding='valid', activation='relu')(inputs)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(32, 6, padding='valid', activation='relu')(p)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(64, 6, padding='valid', activation='relu')(p)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(128, 6, padding='same', activation='relu')(p)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(256, 6, padding='same', activation='relu')(p)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
-    feature_vec = Flatten()(p)
+    feature_vec = Flatten(name='bottleneck')(p)
 
     d = Dense(1, activation='sigmoid', name='direction')(feature_vec)
 
