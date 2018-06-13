@@ -1,5 +1,5 @@
 from models import future_direction_conv
-from prep import *
+import numpy as np
 
 
 def make_labels(x, y):
