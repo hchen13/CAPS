@@ -78,23 +78,33 @@ def future_direction_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
     return model
 
 
-def future_price_conv(input_shape):
+def future_price_conv(input_shape, keep_prob=.2):
     inputs = Input(shape=input_shape[1:])
 
     f = Conv1D(16, 6, padding='valid', activation='relu')(inputs)
+    f = Conv1D(16, 6, padding='same', activation='relu')(f)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(32, 6, padding='valid', activation='relu')(p)
+    f = Conv1D(32, 6, padding='same', activation='relu')(f)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(64, 6, padding='valid', activation='relu')(p)
+    f = Conv1D(64, 6, padding='same', activation='relu')(f)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(128, 6, padding='same', activation='relu')(p)
+    f = Conv1D(128, 6, padding='same', activation='relu')(f)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     f = Conv1D(256, 6, padding='same', activation='relu')(p)
+    f = Conv1D(256, 6, padding='same', activation='relu')(f)
     p = MaxPooling1D()(f)
+    p = Dropout(keep_prob)(p)
 
     feature_vec = Flatten()(p)
 
