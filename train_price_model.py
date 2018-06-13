@@ -12,7 +12,6 @@ def make_labels(x, y):
 
 class SaveModel(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
-        print(logs)
         acc = int(logs['val_directional_accuracy'] * 100)
         if acc > 60:
             self.model.save('assets/price_e{}_acc{}.h5'.format(epoch, acc))
@@ -43,3 +42,4 @@ if __name__ == '__main__':
         callbacks=[cb_save]
     )
     print("\nTraining complete!\n")
+    model.save('assets/price_final.h5')
