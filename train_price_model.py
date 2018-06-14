@@ -1,7 +1,8 @@
 import keras
 import numpy as np
+from keras.models import load_model
 
-from models import future_price_conv
+from models import future_price_conv, continuous_price_model
 from settings import *
 
 
@@ -15,6 +16,33 @@ class SaveModel(keras.callbacks.Callback):
         acc = int(logs['val_directional_accuracy'] * 100)
         if acc > 60:
             self.model.save('assets/price_e{}_acc{}.h5'.format(epoch, acc))
+
+
+def train_from_scratch(x_train, y_train, x_valid, y_valid):
+    model = future_price_conv(x_train.shape)
+    cb_save = SaveModel()
+    train_history = model.fit(
+        x_train, y_train, epochs=50, batch_size=128, shuffle=True,
+        validation_data=(x_valid, y_valid),
+        callbacks=[cb_save]
+    )
+    print("\nTraining complete!\n")
+    model.save('assets/price_final.h5')
+
+
+def transfer_from_directional(x_train, y_train, x_valid, y_valid):
+    directional_model_name = 'directional_61.h5'
+    directional_model_path = 'assets/{}'.format(directional_model_name)
+    pretrained = load_model(directional_model_path)
+    model = continuous_price_model(pretrained, mode='transfer')
+    cb_save = SaveModel()
+    train_history = model.fit(
+        x_train, y_train, epochs=50, batch_size=128, shuffle=True,
+        validation_data=(x_valid, y_valid),
+        callbacks=[cb_save]
+    )
+    print("\nTraining complete!\n")
+    model.save('assets/price_final.h5')
 
 
 if __name__ == '__main__':
@@ -32,14 +60,5 @@ if __name__ == '__main__':
 
     ensure_dir_exists(os.path.join(ROOT_DIR, 'assets'))
 
-    model = future_price_conv(x_train.shape)
-
-    cb_save = SaveModel()
-
-    train_history = model.fit(
-        x_train, y_train, epochs=50, batch_size=128, shuffle=True,
-        validation_data=(x_valid, y_valid),
-        callbacks=[cb_save]
-    )
-    print("\nTraining complete!\n")
-    model.save('assets/price_final.h5')
+    # train_from_scrach(x_train, y_train, x_valid, y_valid)
+    transfer_from_directional(x_train, y_valid, x_valid, y_valid)

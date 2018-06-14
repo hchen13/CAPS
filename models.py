@@ -36,48 +36,6 @@ def directional_accuracy(y, y_hat):
     return K.mean(y * y_hat > 0)
 
 
-def future_price_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
-
-    inputs = Input(shape=input_shape[1:])
-
-    lstm = LSTM(lstm_neurons, return_sequences=True)(inputs)
-    drop = Dropout(keep_prob)(lstm)
-
-    lstm = LSTM(lstm_neurons, return_sequences=False)(drop)
-    drop = Dropout(keep_prob)(lstm)
-
-    dense = Dense(128, kernel_initializer='uniform', activation='relu')(drop)
-
-    dense = Dense(32, activation='relu')(dense)
-    price = Dense(1, activation='linear')(dense)
-
-    model = Model(inputs=inputs, outputs=price)
-    model.compile(optimizer='adam', loss=['mae'], metrics=['mae'])
-    model.summary()
-    return model
-
-
-def future_direction_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
-
-    inputs = Input(shape=input_shape[1:])
-
-    lstm = LSTM(lstm_neurons, return_sequences=True)(inputs)
-    drop = Dropout(keep_prob)(lstm)
-
-    lstm = LSTM(lstm_neurons, return_sequences=False)(drop)
-    drop = Dropout(keep_prob)(lstm)
-
-    dense = Dense(128, kernel_initializer='uniform', activation='relu')(drop)
-
-    # dense = Dense(32, activation='relu')(dense)
-    d = Dense(1, activation='sigmoid', name='direction')(dense)
-
-    model = Model(inputs=inputs, outputs=d)
-    model.compile(optimizer='adam', loss=['binary_crossentropy'], metrics=['acc'])
-    model.summary()
-    return model
-
-
 def future_price_conv(input_shape, keep_prob=.2):
     inputs = Input(shape=input_shape[1:])
 
@@ -111,6 +69,20 @@ def future_price_conv(input_shape, keep_prob=.2):
     p = Dense(1, activation='linear', name='price')(feature_vec)
 
     model = Model(inputs=inputs, outputs=p)
+    model.compile(optimizer='adam', loss=directional_loss, metrics=[directional_accuracy])
+    model.summary()
+    return model
+
+
+def continuous_price_model(pretrained, mode='transfer'):
+    if mode == 'transfer':
+        for layer in pretrained.layers:
+            layer.trainable = False
+    x = pretrained.get_layer(name='bottleneck').output
+    hidden = Dense(64, activation='relu', kernel_initializer='uniform')(x)
+    y = Dense(1, activation='linear', name='price')(hidden)
+
+    model = Model(inputs=pretrained.inputs, outputs=y)
     model.compile(optimizer='adam', loss=directional_loss, metrics=[directional_accuracy])
     model.summary()
     return model
@@ -150,5 +122,47 @@ def future_direction_conv(input_shape, keep_prob=.2):
 
     model = Model(inputs=inputs, outputs=d)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
-    # model.summary()
+    model.summary()
+    return model
+
+
+def future_price_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
+
+    inputs = Input(shape=input_shape[1:])
+
+    lstm = LSTM(lstm_neurons, return_sequences=True)(inputs)
+    drop = Dropout(keep_prob)(lstm)
+
+    lstm = LSTM(lstm_neurons, return_sequences=False)(drop)
+    drop = Dropout(keep_prob)(lstm)
+
+    dense = Dense(128, kernel_initializer='uniform', activation='relu')(drop)
+
+    dense = Dense(32, activation='relu')(dense)
+    price = Dense(1, activation='linear')(dense)
+
+    model = Model(inputs=inputs, outputs=price)
+    model.compile(optimizer='adam', loss=['mae'], metrics=['mae'])
+    model.summary()
+    return model
+
+
+def future_direction_lstm(input_shape, lstm_neurons=128, keep_prob=.2):
+
+    inputs = Input(shape=input_shape[1:])
+
+    lstm = LSTM(lstm_neurons, return_sequences=True)(inputs)
+    drop = Dropout(keep_prob)(lstm)
+
+    lstm = LSTM(lstm_neurons, return_sequences=False)(drop)
+    drop = Dropout(keep_prob)(lstm)
+
+    dense = Dense(128, kernel_initializer='uniform', activation='relu')(drop)
+
+    # dense = Dense(32, activation='relu')(dense)
+    d = Dense(1, activation='sigmoid', name='direction')(dense)
+
+    model = Model(inputs=inputs, outputs=d)
+    model.compile(optimizer='adam', loss=['binary_crossentropy'], metrics=['acc'])
+    model.summary()
     return model
