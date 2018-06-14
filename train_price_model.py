@@ -61,4 +61,4 @@ if __name__ == '__main__':
     ensure_dir_exists(os.path.join(ROOT_DIR, 'assets'))
 
     # train_from_scrach(x_train, y_train, x_valid, y_valid)
-    transfer_from_directional(x_train, y_valid, x_valid, y_valid)
+    transfer_from_directional(x_train, y_train, x_valid, y_valid)
