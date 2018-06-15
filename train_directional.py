@@ -1,7 +1,7 @@
 import keras
 from keras.callbacks import ModelCheckpoint
 
-from models import future_direction_conv
+from models import future_direction_conv, future_direction_lstm
 import numpy as np
 
 from settings import *
@@ -34,7 +34,8 @@ if __name__ == '__main__':
 
     ensure_dir_exists(os.path.join(ROOT_DIR, 'assets'))
 
-    model = future_direction_conv(x_train.shape)
+    # model = future_direction_conv(x_train.shape)
+    model = future_direction_lstm(x_train.shape)
 
     checkpointer = SaveModel()
     train_history = model.fit(
