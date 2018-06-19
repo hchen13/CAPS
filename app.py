@@ -47,17 +47,10 @@ if __name__ == '__main__':
     x_usdt, y_usdt = generate_train_data(dataset, counter='usdt')
     x_eth, y_eth = generate_train_data(dataset, counter='eth')
 
-
     x = np.concatenate([x_btc, x_usdt, x_eth])
     y = np.concatenate([y_btc, y_usdt, y_eth])
-
-    x_train, y_train, x_valid, y_valid = split(x, y, ratio=.9)
-    print(x_train.shape, y_train.shape)
-    print(x_valid.shape, y_valid.shape)
-    cache(x_train, 'x_train')
-    cache(y_train, 'y_train')
-    cache(x_valid, 'x_valid')
-    cache(y_valid, 'y_valid')
+    x_train, y_train = shuffle(x, y)
+    del x, y
 
     dataset = Dataset(TEST_DIR)
     x_btc, y_btc = generate_train_data(dataset, counter='btc')
@@ -65,9 +58,20 @@ if __name__ == '__main__':
     x_eth, y_eth = generate_train_data(dataset, counter='eth')
     x = np.concatenate([x_btc, x_usdt, x_eth])
     y = np.concatenate([y_btc, y_usdt, y_eth])
-    x_test, y_test = shuffle(x, y)
 
-    print(x_test.shape, y_test.shape)
+    x_valid, y_valid, x_test, y_test = split(x, y, ratio=.6)
+
+    print("Training set shapes: ")
+    print("Inputs: {} | Outputs: {}".format(x_train.shape, y_train.shape))
+    print("Validation set shapes:")
+    print("Inputs: {} | Outputs: {}".format(x_valid.shape, y_valid.shape))
+    print("Test set shapes:")
+    print("Inputs: {} | Outputs: {}".format(x_test.shape, y_test.shape))
+
+    cache(x_train, 'x_train')
+    cache(y_train, 'y_train')
+    cache(x_valid, 'x_valid')
+    cache(y_valid, 'y_valid')
     cache(x_test, 'x_test')
     cache(y_test, 'y_test')
     """ end """

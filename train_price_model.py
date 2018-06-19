@@ -31,7 +31,7 @@ def train_from_scratch(x_train, y_train, x_valid, y_valid):
 
 
 def transfer_from_directional(x_train, y_train, x_valid, y_valid):
-    directional_model_name = 'directional_final.h5'
+    directional_model_name = 'direction_final.h5'
     directional_model_path = 'assets/{}'.format(directional_model_name)
     pretrained = load_model(directional_model_path)
     model = continuous_price_model(pretrained, mode='finetune')
