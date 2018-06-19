@@ -199,6 +199,8 @@ class Dataset(object):
 
     def __init__(self, data_root=DATA_DIR):
         self.root = data_root
+        self.base_files = {}
+        self.counter_files = {}
         self._get_data_files()
 
     def _get_data_files(self):

@@ -12,7 +12,8 @@ def generate_train_data(dataset, base=None, counter=None):
     inputs, targets = [], []
     print("{} coin pairs found. Generating datasets...".format(len(coin_list)))
     for i, pair in enumerate(coin_list):
-        print("Accessing data: {}/{}...".format(pair.base, pair.counter))
+        print("\rProgress: {:.1f}%".format((i + 1) / len(coin_list) * 100), end='')
+        # print("Accessing data: {}/{}...".format(pair.base, pair.counter))
         x, y = pair.stacked(future_length=12)
 
         if x.ndim != 3 or y.ndim != 3:
@@ -26,6 +27,7 @@ def generate_train_data(dataset, base=None, counter=None):
 
     x = np.concatenate(inputs)
     y = np.concatenate(targets)
+    print()
     return x, y
 
 
@@ -59,7 +61,7 @@ if __name__ == '__main__':
     x = np.concatenate([x_btc, x_usdt, x_eth])
     y = np.concatenate([y_btc, y_usdt, y_eth])
 
-    x_valid, y_valid, x_test, y_test = split(x, y, ratio=.6)
+    x_valid, y_valid, x_test, y_test = split(x, y, ratio=.4)
 
     print("Training set shapes: ")
     print("Inputs: {} | Outputs: {}".format(x_train.shape, y_train.shape))
