@@ -1,7 +1,7 @@
 import keras
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, History
 
-from models import future_direction_conv, future_direction_lstm
+from models import *
 import numpy as np
 
 from settings import *
@@ -20,28 +20,29 @@ class SaveModel(keras.callbacks.Callback):
 
 
 if __name__ == '__main__':
-    x_train = np.load('cache/x_train.npy')
-    y_raw = np.load('cache/y_train.npy')
+    x_train = np.load('cache/x_valid.npy')
+    y_raw = np.load('cache/x_valid.npy')
     y_train = make_labels(x_train, y_raw)
     # x_train = x_train[:1000]
     # y_train = y_train[:1000]
 
-    x_valid = np.load('cache/x_test.npy')
-    y_valid = np.load('cache/y_test.npy')
-    y_valid = make_labels(x_valid, y_valid)
+    # x_valid = np.load('cache/x_valid.npy')
+    # y_valid = np.load('cache/y_valid.npy')
+    # y_valid = make_labels(x_valid, y_valid)
     # x_valid = x_valid[:1000]
     # y_valid = y_valid[:1000]
 
     ensure_dir_exists(os.path.join(ROOT_DIR, 'assets'))
 
-    # model = future_direction_conv(x_train.shape)
-    model = future_direction_lstm(x_train.shape)
+    model = direction_inception_model(x_train.shape)
+    # model = future_direction_lstm(x_train.shape)
 
-    checkpointer = SaveModel()
-    train_history = model.fit(
-        x_train, y_train, epochs=50, batch_size=128, shuffle=True,
-        validation_data=(x_valid, y_valid),
-        callbacks=[checkpointer]
-    )
-    print("\nTraining complete!\n")
-    model.save('assets/direction_final.h5')
+    # checkpointer = SaveModel()
+    # train_history = model.fit(
+    #     x_train, y_train, epochs=2, batch_size=128, shuffle=True,
+    #     validation_data=(x_valid, y_valid),
+    #     # callbacks=[checkpointer]
+    # )
+    # print(train_history.history)
+    # print("\nTraining complete!\n")
+    # model.save('assets/direction_final.h5')

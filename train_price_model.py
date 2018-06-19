@@ -52,8 +52,8 @@ if __name__ == '__main__':
     # x_train = x_train[:1000]
     # y_train = y_train[:1000]
 
-    x_valid = np.load('cache/x_test.npy')
-    y_valid = np.load('cache/y_test.npy')
+    x_valid = np.load('cache/x_valid.npy')
+    y_valid = np.load('cache/y_valid.npy')
     y_valid = make_labels(x_valid, y_valid)
     # x_valid = x_valid[:1000]
     # y_valid = y_valid[:1000]
