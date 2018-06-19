@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     x_valid = np.load('cache/x_valid.npy')
     y_valid = np.load('cache/y_valid.npy')
-    # y_valid = make_labels(x_valid, y_valid)
+    y_valid = make_labels(x_valid, y_valid)
     # x_valid = x_valid[:1000]
     # y_valid = y_valid[:1000]
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     checkpointer = SaveModel()
     train_history = model.fit(
-        x_train, y_train, epochs=2, batch_size=128, shuffle=True,
+        x_train, y_train, epochs=50, batch_size=128, shuffle=True,
         validation_data=(x_valid, y_valid),
         callbacks=[checkpointer]
     )
