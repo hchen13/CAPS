@@ -135,21 +135,22 @@ def direction_inception_model(input_shape, keep_prob=.2):
     f = Conv1D(32, 3, padding='same', activation='relu')(f)
     f = Conv1D(64, 3, padding='same', activation='relu')(f)
     p = MaxPooling1D()(f)
-    # p = Dropout(keep_prob)(p)
+    p = Dropout(keep_prob)(p)
 
-    # inception
+    # inception layers
     incep = inception(p, 128)
     incep = inception(incep, 256)
     p = MaxPooling1D()(incep)
+    p = Dropout(keep_prob)(p)
 
     incep = inception(p, 480)
     incep = inception(incep, 512)
     p = MaxPooling1D()(incep)
+    p = Dropout(keep_prob)(p)
 
     incep = inception(p, 1024)
     incep = inception(incep, 1024)
     p = AveragePooling1D()(incep)
-
     p = Dropout(keep_prob)(p)
 
     feature_vec = Flatten(name='bottleneck')(p)
