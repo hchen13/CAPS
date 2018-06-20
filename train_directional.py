@@ -43,6 +43,8 @@ if __name__ == '__main__':
         validation_data=(x_valid, y_valid),
         callbacks=[checkpointer]
     )
-    print(train_history.history)
+
     print("\nTraining complete!\n")
     model.save('assets/inception_final.h5')
+
+    print(train_history.history)
