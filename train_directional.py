@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     ensure_dir_exists(os.path.join(ROOT_DIR, 'assets'))
 
-    model = direction_inception_model(x_train.shape)
+    model = direction_inception_model(x_train.shape, .2)
     # model = future_direction_lstm(x_train.shape)
 
     checkpointer = SaveModel()

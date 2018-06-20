@@ -116,10 +116,10 @@ def direction_inception_model(input_shape, keep_prob=.2):
 
         conv1 = Conv1D(num_channels, 1, padding='same', activation='relu')(layer)
 
-        conv3 = Conv1D(16, 1, padding='same', activation='relu')(layer)
+        conv3 = Conv1D(int(num_channels / 4), 1, padding='same', activation='relu')(layer)
         conv3 = Conv1D(int(num_channels / 2), 3, padding='same', activation='relu')(conv3)
 
-        conv6 = Conv1D(8, 1, padding='same', activation='relu')(layer)
+        conv6 = Conv1D(int(num_channels / 8), 1, padding='same', activation='relu')(layer)
         conv6 = Conv1D(int(num_channels / 4), 6, padding='same', activation='relu')(conv6)
 
         pool = MaxPooling1D(strides=1, padding='same')(layer)
@@ -148,14 +148,14 @@ def direction_inception_model(input_shape, keep_prob=.2):
     p = MaxPooling1D()(incep)
     p = Dropout(keep_prob)(p)
 
-    incep = inception(p, 1024)
-    incep = inception(incep, 1024)
+    incep = inception(p, 512)
+    incep = inception(incep, 800)
     p = MaxPooling1D()(incep)
     p = Dropout(keep_prob)(p)
 
     incep = inception(p, 1024)
     incep = inception(incep, 1024)
-    p = MaxPooling1D()(incep)
+    p = AveragePooling1D()(incep)
     p = Dropout(keep_prob)(p)
 
     feature_vec = Flatten(name='bottleneck')(p)
