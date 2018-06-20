@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     checkpointer = SaveModel()
     train_history = model.fit(
-        x_train, y_train, epochs=50, batch_size=128, shuffle=True,
+        x_train, y_train, epochs=100, batch_size=128, shuffle=True,
         validation_data=(x_valid, y_valid),
         callbacks=[checkpointer]
     )

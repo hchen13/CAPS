@@ -141,7 +141,7 @@ def direction_inception_model(input_shape, keep_prob=.2):
     incep = inception(p, 128)
     incep = inception(incep, 256)
     p = MaxPooling1D()(incep)
-    p = Dropout(keep_prob)(p)
+    # p = Dropout(keep_prob)(p)
 
     incep = inception(p, 480)
     incep = inception(incep, 512)
@@ -151,12 +151,12 @@ def direction_inception_model(input_shape, keep_prob=.2):
     incep = inception(p, 512)
     incep = inception(incep, 800)
     p = MaxPooling1D()(incep)
-    p = Dropout(keep_prob)(p)
-
-    # incep = inception(p, 1024)
-    # incep = inception(incep, 1024)
-    # p = AveragePooling1D()(incep)
     # p = Dropout(keep_prob)(p)
+
+    incep = inception(p, 1024)
+    incep = inception(incep, 1024)
+    p = AveragePooling1D()(incep)
+    p = Dropout(keep_prob)(p)
 
     feature_vec = Flatten(name='bottleneck')(p)
     dense = Dense(800, activation='relu')(feature_vec)
