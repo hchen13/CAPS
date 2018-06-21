@@ -37,14 +37,14 @@ if __name__ == '__main__':
     model = direction_inception_model(x_train.shape, .2)
     # model = future_direction_lstm(x_train.shape)
 
-    checkpointer = SaveModel()
-    train_history = model.fit(
-        x_train, y_train, epochs=100, batch_size=128, shuffle=True,
-        validation_data=(x_valid, y_valid),
-        callbacks=[checkpointer]
-    )
-
-    print("\nTraining complete!\n")
-    model.save('assets/inception_final.h5')
-
-    print(train_history.history)
+    # checkpointer = SaveModel()
+    # train_history = model.fit(
+    #     x_train, y_train, epochs=100, batch_size=128, shuffle=True,
+    #     validation_data=(x_valid, y_valid),
+    #     callbacks=[checkpointer]
+    # )
+    #
+    # print("\nTraining complete!\n")
+    # model.save('assets/inception_final.h5')
+    #
+    # print(train_history.history)
