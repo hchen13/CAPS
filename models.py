@@ -129,60 +129,50 @@ def direction_inception_model(input_shape, keep_prob=.2):
         return incep
 
     inputs = Input(shape=input_shape[1:])
-    print(inputs.shape)
 
     f = Conv1D(16, 6, padding='same', activation='relu', kernel_initializer='he_normal')(inputs)
     f = Conv1D(16, 6, padding='same', activation='relu', kernel_initializer='he_normal')(f)
     p = MaxPooling1D()(f)
     p = BatchNormalization()(p)
     p = Dropout(keep_prob)(p)
-    print(p.shape)
 
     f = Conv1D(32, 1, padding='same', activation='relu', kernel_initializer='he_normal')(p)
     f = Conv1D(32, 6, padding='same', activation='relu', kernel_initializer='he_normal')(f)
     p = MaxPooling1D()(f)
     p = BatchNormalization()(p)
     p = Dropout(keep_prob)(p)
-    print(p.shape)
 
     p = inception(p, 128)
     p = BatchNormalization()(p)
-    print(p.shape)
 
     f = Conv1D(64, 1, padding='same', activation='relu', kernel_initializer='he_normal')(p)
     f = Conv1D(64, 6, padding='same', activation='relu', kernel_initializer='he_normal')(f)
     p = MaxPooling1D()(f)
     p = BatchNormalization()(p)
     p = Dropout(keep_prob)(p)
-    print(p.shape)
 
     f = Conv1D(128, 1, padding='same', activation='relu', kernel_initializer='he_normal')(p)
     f = Conv1D(128, 6, padding='same', activation='relu', kernel_initializer='he_normal')(f)
     p = MaxPooling1D()(f)
     p = BatchNormalization()(p)
     p = Dropout(keep_prob)(p)
-    print(p.shape)
 
     p = inception(p, 256)
     p = BatchNormalization()(p)
-    print(p.shape)
 
     f = Conv1D(256, 1, padding='same', activation='relu', kernel_initializer='he_normal')(p)
     f = Conv1D(256, 3, padding='same', activation='relu', kernel_initializer='he_normal')(f)
     p = MaxPooling1D()(f)
     p = Dropout(keep_prob)(p)
-    print(p.shape)
 
     f = Conv1D(512, 1, padding='same', activation='relu', kernel_initializer='he_normal')(p)
     f = Conv1D(1024, 3, padding='same', activation='relu', kernel_initializer='he_normal')(f)
     p = MaxPooling1D()(f)
     p = BatchNormalization()(p)
     p = Dropout(keep_prob)(p)
-    print(p.shape)
 
     p = inception(p, 1024)
     p = BatchNormalization()(p)
-    print(p.shape)
 
     feature_vec = Flatten(name='bottleneck')(p)
     dense = Dense(800, activation='relu')(feature_vec)
