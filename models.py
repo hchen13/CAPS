@@ -180,6 +180,10 @@ def direction_inception_model(input_shape, keep_prob=.2):
     p = Dropout(keep_prob)(p)
     print(p.shape)
 
+    p = inception(p, 1024)
+    p = BatchNormalization()(p)
+    print(p.shape)
+
     feature_vec = Flatten(name='bottleneck')(p)
     dense = Dense(800, activation='relu')(feature_vec)
 
@@ -191,7 +195,7 @@ def direction_inception_model(input_shape, keep_prob=.2):
     return model
 
 
-def future_direction_conv(input_shape, keep_prob=.2):
+def direction_vgg_model(input_shape, keep_prob=.2):
     inputs = Input(shape=input_shape[1:])
     print(inputs.shape)
 

@@ -8,7 +8,7 @@ from settings import *
 
 
 def make_labels(x, y):
-    price_diff = y[:, -1, 0] - x[:, -1, 0]
+    price_diff = y[:, -1, 1] - x[:, -1, 1]
     return price_diff > 0
 
 
@@ -20,31 +20,37 @@ class SaveModel(keras.callbacks.Callback):
 
 
 if __name__ == '__main__':
-    x_train = np.load('cache/x_train.npy')
-    y_train = np.load('cache/y_train.npy')
-    y_train = make_labels(x_train, y_train)
-    # x_train = x_train[:1000]
-    # y_train = y_train[:1000]
+    print("Preparing training set...")
+    xs, ys = [], []
+    for i in range(4):
+        x = np.load('cache/x_train{}.npy'.format(i + 1))
+        y = np.load('cache/y_train{}.npy'.format(i + 1))
+        xs.append(x)
+        ys.append(y)
+    inputs = np.concatenate(xs)
+    outputs = np.concatenate(ys)
+    del xs, ys
+    x_train = inputs
+    y_train = make_labels(x_train, outputs)
+    print("Training set ready. Preparing validation set...")
 
     x_valid = np.load('cache/x_valid.npy')
     y_valid = np.load('cache/y_valid.npy')
     y_valid = make_labels(x_valid, y_valid)
-    # x_valid = x_valid[:1000]
-    # y_valid = y_valid[:1000]
+    print("Validation set ready.")
 
     ensure_dir_exists(os.path.join(ROOT_DIR, 'assets'))
 
     model = direction_inception_model(x_train.shape, .2)
-    # model = future_direction_lstm(x_train.shape)
 
-    # checkpointer = SaveModel()
-    # train_history = model.fit(
-    #     x_train, y_train, epochs=100, batch_size=128, shuffle=True,
-    #     validation_data=(x_valid, y_valid),
-    #     callbacks=[checkpointer]
-    # )
-    #
-    # print("\nTraining complete!\n")
-    # model.save('assets/inception_final.h5')
-    #
-    # print(train_history.history)
+    checkpointer = SaveModel()
+    train_history = model.fit(
+        x_train, y_train, epochs=100, batch_size=512, shuffle=True,
+        validation_data=(x_valid, y_valid),
+        callbacks=[checkpointer]
+    )
+
+    print("\nTraining complete!\n")
+    model.save('assets/inception_final.h5')
+
+    print(train_history.history)
