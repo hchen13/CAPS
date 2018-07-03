@@ -7,16 +7,42 @@ import numpy as np
 from settings import *
 
 
-def make_labels(x, y):
-    price_diff = y[:, -1, 1] - x[:, -1, 1]
-    return price_diff > 0
-
-
 class SaveModel(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         acc = int(logs['val_acc'] * 100)
         if acc > 60:
             self.model.save('assets/incep_e{}_acc{}.h5'.format(epoch, acc))
+
+
+def make_labels(x, y):
+    price_diff = y[:, -1, 1] - x[:, -1, 1]
+    return price_diff > 0
+
+
+def make_price_targets(x, y):
+    price_diff = y[:, -1, 1] - x[:, -1, 1]
+    return price_diff
+
+
+def read_data():
+    print("Preparing training set...")
+    xs, ys = [], []
+    for i in range(4):
+        x = np.load('cache/x_train{}.npy'.format(i + 1))
+        y = np.load('cache/y_train{}.npy'.format(i + 1))
+        xs.append(x)
+        ys.append(y)
+    inputs = np.concatenate(xs)
+    outputs = np.concatenate(ys)
+    del xs, ys
+    x_train = inputs
+    y_train = make_labels(x_train, outputs)
+    print("Training set ready.\nPreparing validation set...")
+    print("Validation set ready.\n")
+
+
+def train_directional():
+    pass
 
 
 if __name__ == '__main__':
@@ -32,7 +58,7 @@ if __name__ == '__main__':
     del xs, ys
     x_train = inputs
     y_train = make_labels(x_train, outputs)
-    print("Training set ready. Preparing validation set...")
+    print("Training set ready. \nPreparing validation set...")
 
     x_valid = np.load('cache/x_valid.npy')
     y_valid = np.load('cache/y_valid.npy')

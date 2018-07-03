@@ -56,59 +56,6 @@ def f1_score(y, y_hat):
     return 2 / (1 / p + 1 / r)
 
 
-
-def future_price_conv(input_shape, keep_prob=.2):
-    inputs = Input(shape=input_shape[1:])
-
-    f = Conv1D(16, 6, padding='valid', activation='relu')(inputs)
-    f = Conv1D(16, 6, padding='same', activation='relu')(f)
-    p = MaxPooling1D()(f)
-    p = Dropout(keep_prob)(p)
-
-    f = Conv1D(32, 6, padding='valid', activation='relu')(p)
-    f = Conv1D(32, 6, padding='same', activation='relu')(f)
-    p = MaxPooling1D()(f)
-    p = Dropout(keep_prob)(p)
-
-    f = Conv1D(64, 6, padding='valid', activation='relu')(p)
-    f = Conv1D(64, 6, padding='same', activation='relu')(f)
-    p = MaxPooling1D()(f)
-    p = Dropout(keep_prob)(p)
-
-    f = Conv1D(128, 6, padding='same', activation='relu')(p)
-    f = Conv1D(128, 6, padding='same', activation='relu')(f)
-    p = MaxPooling1D()(f)
-    p = Dropout(keep_prob)(p)
-
-    f = Conv1D(256, 6, padding='same', activation='relu')(p)
-    f = Conv1D(256, 6, padding='same', activation='relu')(f)
-    p = MaxPooling1D()(f)
-    p = Dropout(keep_prob)(p)
-
-    feature_vec = Flatten()(p)
-
-    p = Dense(1, activation='linear', name='price')(feature_vec)
-
-    model = Model(inputs=inputs, outputs=p)
-    model.compile(optimizer='adam', loss=directional_loss, metrics=[directional_accuracy])
-    model.summary()
-    return model
-
-
-def continuous_price_model(pretrained, mode='transfer'):
-    if mode == 'transfer':
-        for layer in pretrained.layers:
-            layer.trainable = False
-    x = pretrained.get_layer(name='bottleneck').output
-    hidden = Dense(64, activation='relu', kernel_initializer='uniform')(x)
-    y = Dense(1, activation='linear', name='price')(hidden)
-
-    model = Model(inputs=pretrained.inputs, outputs=y)
-    model.compile(optimizer='adam', loss=directional_loss, metrics=[directional_accuracy])
-    model.summary()
-    return model
-
-
 def direction_inception_model(input_shape, keep_prob=.2):
     def inception(layer, out_channels):
         # equivalence to the 1x1 convolution
